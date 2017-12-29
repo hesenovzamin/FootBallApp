@@ -1,0 +1,332 @@
+﻿@using FootballAppMVC.Controllers
+@using FootballAppMVC.Models
+@model  List<MainMenu>
+@{
+    ViewBag.Title = "EditGame";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<nav class="navbar navbar-inverse" style="background-color: #043687; margin-bottom:0px; border:none; border-radius:0px;">
+    <div class="container-fluid">
+        <div class="navbar-header navTitle">
+            <button type="button" class="navSlideBtn navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand " href="#"><i class="fa fa-futbol-o" aria-hidden="true"></i> Football App</a>
+        </div>
+        <div class="collapse navbar-collapse mainNav" id="myNavbar">
+            <ul class="nav navbar-nav">
+
+                @foreach (var navElem in Model)
+                {
+                    if (navElem.Availabilty == true)
+                    {
+                        <li>@Html.ActionLink(navElem.Text, navElem.Link, navElem.Text)</li>
+                    }
+                }
+
+            </ul>
+            @if (ViewBag.curUser == "")
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li>@Html.ActionLink("Sign Up", "SignUp", "Register")</li>
+                    <li>@Html.ActionLink("Login", "EnterSystem", "Login")</li>
+                </ul>
+            }
+            @if (!(ViewBag.curUser == ""))
+            {
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a>Hello, @ViewBag.curUser</a></li>
+                    <li>@Html.ActionLink("Logout", "Exit", "Logout")</li>
+                </ul>
+            }
+
+        </div>
+    </div>
+</nav>
+<div class="dropdownNav">
+    <ul>
+        @foreach (var navElem in Model)
+        {
+            if (navElem.Availabilty == true)
+            {
+                <li>@Html.ActionLink(navElem.Text, navElem.Link, navElem.Text)</li>
+            }
+        }
+        @if (ViewBag.curUser == "")
+            {
+            <li>@Html.ActionLink("Sign Up", "SignUp", "Register")</li>
+            <li style="border-bottom:none ">@Html.ActionLink("Login", "EnterSystem", "Login")</li>
+        }
+        @if (!(ViewBag.curUser == ""))
+            {
+            <li><a>Hello, @ViewBag.curUser</a></li>
+            <li style="border-bottom:none ">@Html.ActionLink("Logout", "Exit", "Logout")</li>
+        }
+    </ul>
+</div>
+<!--Editing the game-->
+<style>
+    .addBtn a {
+        color: white;
+    }
+
+    #editGame .container .row .col-xs-12 .gameInfo .gameTitle {
+        display: block;
+    }
+
+    #editGame .container .row .col-xs-12 img {
+        width: 38%;
+        margin-top: 20px;
+    }
+
+    #editGame .container .row .col-xs-12 .gameInfo .gameTitle div {
+        margin-top: 20px;
+        display: inline-block;
+        font-size: 1.8em;
+        background: #043687;
+        color: white;
+        font-family: 'Open Sans Condensed', sans-serif;
+        padding: 10px 40px;
+        width: 25%;
+        text-align: center;
+    }
+</style>
+<section id="editGame">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="gameInfo">
+                    <div class="gameTitle">
+                        @foreach (var game in ViewBag.allGamesList)
+                        {
+                            if (game.Id == ViewBag.gameId)
+                            {
+                                foreach (var team in ViewBag.allTeamsList)
+                                {
+                                    if (game.Team1_id == team.Id)
+                                    {
+                                        <div>1. @team.Name</div>
+                                    }
+                                }
+
+                                foreach (var team in ViewBag.allTeamsList)
+                                {
+                                    if (game.Team2_id == team.Id)
+                                    {
+                                        <div>2. @team.Name</div>
+                                    }
+                                }
+                                if (!(game.Score == null))
+                                {
+                                    <div>
+                                        Score: @game.Score
+                                    </div>
+                                }
+
+                            }
+                        }
+
+                    </div>
+                    <div class="players" style="margin-top:30px">
+                        <section id="allPlayersTable">
+                            <div class="container" style="padding-left:0">
+                                <table class="table">
+                                    <thead>
+                                        <tr style="color:white;background:#043687; font-family:'Open Sans Condensed', sans-serif; font-size:1.3em">
+                                            <th>First Team Players</th>
+                                            <th>Age</th>
+                                            <th>Sex</th>
+                                            <th>Email</th>
+                                            <th>Your Status</th>
+                                            <th>Edit</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        @foreach (var game in ViewBag.allGamesList)
+                                        {
+                                            // finding the correct game
+                                            if (game.Id == ViewBag.gameId)
+                                            {
+                                                // finding correct users - players
+                                                foreach (var usersGames in ViewBag.allUsersGamesList)
+                                                {
+                                                    if (usersGames.Game_id == game.Id && usersGames.Team_id == game.Team1_id)
+                                                    {
+                                                        foreach (var user in ViewBag.allUserList)
+                                                        {
+                                                            if (user.Id == usersGames.User_id)
+                                                            {
+                                                                <tr>
+                                                                    <td>@user.Username</td>
+                                                                    <td>@user.Age</td>
+                                                                    <td>@user.Sex</td>
+                                                                    <td>@user.Email</td>
+                                                                    @if (usersGames.IsAdmin == true)
+                                                                    {
+                                                                        <td>Admin</td>
+                                                                    }
+                                                                    @if (usersGames.IsAdmin == false)
+                                                                    {
+                                                                        <td>Contact with Admin to get the address</td>
+                                                                        
+                                                                    }
+                                                                
+                                                                                                                                  
+                                                                    @if (ViewBag.aaa == ViewBag.bbb)
+                                                                    {
+                                                                        <td> <button class="btn btn-success">@Html.ActionLink("Edit", "EnterStatic", "Games", new { EditPlayerID = usersGames.User_id }, null)</button></td>
+                                                                        <td><button class="btn btn-danger">@Html.ActionLink("Remove", "RemovePlayer", "Games", new { GameID = EditGameIdHolder.currentEditGameId, RemoveID = usersGames.User_id }, null)</button></td>
+
+                                                                    }
+                                                               
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                    <button class="btn btn-success addBtn">@Html.ActionLink("Add me to the gamelist", "AddPlayer", "Games",new { id = 1},null)</button>
+                    <div class="players" style="margin-top:30px">
+                        <section id="allPlayersTable">
+                            <div class="container" style="padding-left:0">
+                                <table class="table">
+                                    <thead>
+                                        <tr style="color:white;background:#043687; font-family:'Open Sans Condensed', sans-serif; font-size:1.3em">
+                                            <th>Second Team Players</th>
+                                            <th>Age</th>
+                                            <th>Sex</th>
+                                            <th>Email</th>
+                                            <th>Your Status</th>
+                                            <th>Edit</th>
+                                            <th>Remove</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var game in ViewBag.allGamesList)
+                                        {
+                                            // finding the correct game
+                                            if (game.Id == ViewBag.gameId)
+                                            {
+                                                // finding correct users - players in a team
+                                                foreach (var usersGames in ViewBag.allUsersGamesList)
+                                                {
+                                                    if (usersGames.Game_id == game.Id && usersGames.Team_id == game.Team2_id)
+                                                    {
+                                                        foreach (var user in ViewBag.allUserList)
+                                                        {
+                                                            if (user.Id == usersGames.User_id)
+                                                            {
+                                                                <tr>
+                                                                    <td>@user.Username</td>
+                                                                    <td>@user.Age</td>
+                                                                    <td>@user.Sex</td>
+                                                                    <td>@user.Email</td>
+                                                                    @if (usersGames.IsAdmin == true)
+                                                                    {
+                                                                        <td>Admin</td>
+                                                                    }
+                                                                    @if (usersGames.IsAdmin == false)
+                                                                    {
+                                                                        <td>Contact with Admin to get the address</td>
+
+                                                                    }
+                                                                    @if (ViewBag.aaa == ViewBag.bbb)
+                                                                    {
+                                                                        <td> <button class="btn btn-success">@Html.ActionLink("Edit", "EnterStatic", "Games", new { EditPlayerID = usersGames.User_id }, null)</button></td>
+                                                                        <td><button class="btn btn-danger">@Html.ActionLink("Remove", "RemovePlayer", "Games", new { GameID = EditGameIdHolder.currentEditGameId, RemoveID = usersGames.User_id }, null)</button></td>
+                                                                    }
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </div>
+                    <button class="btn btn-success addBtn">@Html.ActionLink("Add me to the gamelist", "AddPlayer", "Games",new { id = 2},null)</button>
+                </div>
+            </div> <!-- /.col-xs-12 -->
+        </div> <!-- /.row -->
+    </div> <!-- /.container -->
+</section>
+
+
+@*EDITING THE SCORE*@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+
+            @foreach (var userGames in ViewBag.allUsersGamesList)
+            {
+                foreach (var user in ViewBag.allUserList)
+                {
+                    if (user.Username == ViewBag.curUser)
+                    {
+                        CurrentUserIdHolder.curUserId = user.Id;
+                        break;
+                    }
+                }
+                if (userGames.Game_id == ViewBag.gameId && userGames.User_id == CurrentUserIdHolder.curUserId)
+                {
+                    // checking if the score has already been submitted
+                    foreach (var game in ViewBag.allGamesList)
+                    {
+                        if (game.Id == userGames.Game_id && game.Score == null && userGames.IsAdmin == true)
+                        {
+                            using (Html.BeginForm("EditGame", "Games", new { id = EditGameIdHolder.currentEditGameId }, FormMethod.Post, new { style = "margin-top:50px" }))
+                            {
+                                <div class="form-group">
+                                    <label for="score" class="sr-only">Email</label>
+                                    <input type="number" name="score1" id="score" class="form-control" placeholder="For Example: 1-2">
+                                    <input type="number" name="score2" id="score" class="form-control" placeholder="For Example: 1-2">
+                                </div>
+
+                                <input type="submit" id="btn-login" class="btn btn-custom btn-lg btn-block" value="Submit Final Score of the Game">
+                            }
+                        }
+                    }
+                }
+            }
+        </div> <!-- /.col-xs-12 -->
+    </div> <!-- /.row -->
+</div> <!-- /.container -->
+@*@section scripts{
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script>
+        $(".Click").click(function () {
+            var sonuc = confirm("Remove ?");
+            if (sonuc) {
+                var Player = $(this).data("Remove");
+                $.ajax({
+                    type: "POST",
+                    url: "/Games/RemovePlayer" + Player,
+                    success: function () {
+                        alert("silindi");
+                        window.location.replace("/Games/EditGame");
+                    },
+                    error: function () {
+                        alert("aaaaaa");
+                    }
+                })
+            }
+            else {
+                alert("Silinmedi");
+            }
+        });
+    </script>
+
+    }*@
